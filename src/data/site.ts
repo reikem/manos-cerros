@@ -4,6 +4,8 @@ export interface Pillar { title: string; text: string }
 export interface Testimonial { name: string; role: string; quote: string }
 export interface Place { name: string; zone: string; query: string }
 export interface Photo { file: string; alt: string; caption: string }
+/** Foto del mosaico: al tocarla se voltea y muestra su historia. `pos` ajusta el recorte (object-position). */
+export interface PhotoStory extends Photo { title: string; story: string; fact?: string; pos?: string }
 
 export const site = {
   name: 'Manos del Cerro',
@@ -26,11 +28,54 @@ export const heroSlides: Photo[] = [
 export const images = {
   hero: heroSlides[0],
   cta: { file: 'Panorama Puerto Valvaraiso 10 2007 196.jpg', alt: '' },
+  // Para agregar otra foto: copia el archivo a la misma carpeta de imágenes que las demás
+  // y suma un bloque aquí. El mosaico se acomoda solo.
   mosaic: [
-    { file: 'Ascensor Artillería.jpg', alt: 'Ascensor Artillería, Valparaíso', caption: 'Ascensor Artillería' },
-    { file: 'Cerro Concepcion.jpg', alt: 'Cerro Concepción, Valparaíso', caption: 'Cerro Concepción' },
-    { file: 'Avenida Alemania, Valparaiso 20240214.jpg', alt: 'Avenida Alemania, Valparaíso', caption: 'Avenida Alemania' },
-  ] satisfies Photo[],
+    {
+      file: 'Vista de Valparaíso desde el Cerro Florida - 2.jpg',
+      alt: 'Vista de los cerros y la bahía de Valparaíso',
+      caption: 'Cerro Florida',
+      title: 'Una ciudad hecha de cerros',
+      story:
+        'Valparaíso se levanta sobre más de cuarenta cerros que miran la bahía como un anfiteatro. Esa forma explica sus escaleras, sus ascensores y sus pasajes, y también por qué aquí se trabaja a pie, con el canasto al brazo y conociendo cada esquina.',
+      fact: '2003 · el área histórica fue declarada Patrimonio de la Humanidad por la UNESCO',
+    },
+    {
+      file: 'Panorama Puerto Valvaraiso 10 2007 196.jpg',
+      alt: 'Panorámica del puerto de Valparaíso',
+      caption: 'El puerto',
+      title: 'El puerto que le dio vida',
+      story:
+        'En el siglo XIX Valparaíso fue la gran escala del Pacífico sur: barcos, comerciantes e inmigrantes pasaban por aquí rumbo a todas partes. Ese movimiento levantó la ciudad, y con él nació el comercio de calle que hoy seguimos cuidando.',
+      fact: '1914 · se abre el Canal de Panamá y el tráfico por el Pacífico sur cambia',
+    },
+    {
+      file: 'Ascensor Artillería.jpg',
+      alt: 'Ascensor Artillería, Valparaíso',
+      caption: 'Ascensor Artillería',
+      title: 'El ascensor que mira la bahía',
+      story:
+        'Sube desde el Plan hasta el Paseo 21 de Mayo, un mirador abierto sobre el puerto. Los ascensores nacieron a fines del siglo XIX para que obreros, marinos y familias pudieran subir los cerros sin quedarse sin aliento. Para quienes vendemos en las alturas, siguen siendo parte de la rutina diaria.',
+      fact: '1893 · inauguración del Ascensor Artillería',
+    },
+    {
+      file: 'Cerro Concepcion.jpg',
+      alt: 'Cerro Concepción, Valparaíso',
+      caption: 'Cerro Concepción',
+      title: 'Casas de colores, herencia de inmigrantes',
+      story:
+        'Junto al Cerro Alegre, el Cerro Concepción fue hogar de familias inmigrantes, sobre todo británicas y alemanas, atraídas por el comercio del puerto. De ahí vienen sus casas de calamina, sus miradores y paseos como el Gervasoni, hoy recorridos por vecinos, turistas y vendedores.',
+      fact: '1883 · el Ascensor Concepción, el primero de la ciudad',
+    },
+    {
+      file: 'Avenida Alemania, Valparaiso 20240214.jpg',
+      alt: 'Avenida Alemania, Valparaíso',
+      caption: 'Avenida Alemania',
+      title: 'Una calle que recorre los cerros por arriba',
+      story:
+        'Avenida Alemania corre por la altura de varios cerros, con miradores abiertos a la bahía y casas que se agarran de la ladera. Es calle de vecinos: almacenes, esquinas y puestos donde todos se conocen, y donde el comercio ambulante también es parte del barrio.',
+    },
+  ] satisfies PhotoStory[],
 };
 
 export const manifesto =

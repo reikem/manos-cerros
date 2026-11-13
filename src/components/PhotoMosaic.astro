@@ -3,23 +3,432 @@ import ResponsiveImage from './ui/ResponsiveImage.astro';
 import { images } from '../data/site';
 ---
 <section class="section" aria-label="Valparaíso">
-  <div class="container mosaic">
-    {images.mosaic.map((p) => (
-      <figure>
-        <div class="foto anim-clip"><ResponsiveImage class="anim-settle" file={p.file} alt={p.alt} widths={[500, 800, 1100]} sizes="(min-width:800px) 30vw, 100vw" width={900} height={1200} /></div>
-        <figcaption>{p.caption}</figcaption>
-      </figure>
-    ))}
+  <div class="container">
+    <p class="lead">
+      <span class="lead__d">Pasa el cursor sobre una foto para acercarla y haz clic para verla en grande, girarla y leer su historia.</span>
+      <span class="lead__m">Desliza para ver más fotos y toca una para voltearla y leer su historia.</span>
+    </p>
+    <ul class="mosaic" data-track>
+      {images.mosaic.map((p) => (
+        <li>
+          <div class="card">
+            <div class="flipper">
+              <button
+                type="button"
+                class="tile"
+                data-photo
+                data-caption={p.caption}
+                data-title={p.title}
+                data-text={p.story}
+                data-fact={p.fact ?? ''}
+                data-pos={p.pos ?? 'center'}
+                style={`--pos:${p.pos ?? 'center'}`}
+                aria-haspopup="dialog"
+                aria-label={`${p.caption}: ver la foto y su historia`}
+              >
+                <span class="foto anim-clip">
+                  <ResponsiveImage class="anim-settle" file={p.file} alt={p.alt} widths={[500, 800, 1100]} sizes="(min-width:900px) 30vw, (min-width:640px) 45vw, 80vw" width={800} height={1000} />
+                  <span class="zoom" aria-hidden="true">⤢ Ver en grande</span>
+                </span>
+              </button>
+              <div class="back" aria-hidden="true">
+                <p class="b-kicker">La historia</p>
+                <h3 class="b-title">{p.title}</h3>
+                <p class="b-text">{p.story}</p>
+                {p.fact && <p class="b-fact">{p.fact}</p>}
+                <p class="b-tap">Toca para volver a la foto</p>
+              </div>
+            </div>
+          </div>
+          <p class="cap">
+            <span>{p.caption}</span>
+            <span class="cap__hint" aria-hidden="true">Ver historia ↻</span>
+          </p>
+        </li>
+      ))}
+    </ul>
+    <div class="dots" data-dots>
+      {images.mosaic.map((p, i) => (
+        <button type="button" data-dot aria-label={`Ir a la foto ${i + 1}: ${p.caption}`}></button>
+      ))}
+    </div>
   </div>
 </section>
+
 <style>
-  .mosaic { display: grid; gap: 1.5rem; }
-  figure { margin: 0; }
-  .foto { aspect-ratio: 3 / 4; background: linear-gradient(160deg, #27455c, var(--mar)); overflow: hidden; }
-  .foto :global(img) { width: 100%; height: 100%; object-fit: cover; }
-  figcaption { margin-top: .8rem; font-size: .85rem; color: var(--fg-soft); }
-  @media (min-width: 800px) {
-    .mosaic { grid-template-columns: 1.2fr 1fr 1fr; align-items: start; }
-    figure:nth-child(2) { margin-top: 4rem; } figure:nth-child(3) { margin-top: 1.5rem; }
+  .lead { margin: 0 0 1.5rem; font-size: .9rem; color: var(--fg-soft); }
+  .lead__m { display: none; }
+
+  /* Escritorio y tablet: todas del mismo tamaño; la última fila queda centrada. */
+  .mosaic {
+    --gap: 1.5rem;
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-wrap: wrap; justify-content: center; gap: var(--gap);
   }
+  .mosaic li { position: relative; flex: 0 1 100%; min-width: 0; }
+  @media (min-width: 640px) { .mosaic li { flex-basis: calc((100% - var(--gap)) / 2); } }
+  @media (min-width: 900px) { .mosaic li { flex-basis: calc((100% - 2 * var(--gap)) / 3); } }
+
+  .card { perspective: 1200px; }
+  .flipper {
+    position: relative; aspect-ratio: 4 / 5; border-radius: .25rem;
+    transform-style: preserve-3d;
+    transition: transform .7s cubic-bezier(.2, .8, .2, 1), box-shadow .35s ease;
+  }
+  .tile {
+    position: absolute; inset: 0; display: block; width: 100%; height: 100%;
+    padding: 0; border: 0; border-radius: .25rem; overflow: hidden; background: none;
+    cursor: pointer; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  }
+  .tile:focus-visible { outline: 2px solid var(--accent, #d9915a); outline-offset: 4px; }
+  .foto { position: relative; display: block; width: 100%; height: 100%; background: linear-gradient(160deg, #27455c, var(--mar)); }
+  .foto :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, center); }
+
+  .zoom {
+    position: absolute; left: 50%; bottom: 1rem; transform: translateX(-50%);
+    padding: .4rem .9rem; border-radius: 999px; background: rgba(6, 12, 19, .78); color: #fff;
+    font-size: .8rem; white-space: nowrap; opacity: 0; transition: opacity .25s ease; pointer-events: none;
+  }
+
+  /* Reverso con la historia: solo se usa en el carrusel del celular. */
+  .back { display: none; }
+
+  .cap { display: flex; justify-content: space-between; align-items: baseline; gap: .75rem; margin: .8rem 0 0; font-size: .85rem; color: var(--fg-soft); }
+  .cap__hint { color: var(--accent, #d9915a); font-size: .78rem; white-space: nowrap; }
+  .dots { display: none; }
+
+  /* Hover: la foto se acerca y se destaca sobre las demás. */
+  @media (hover: hover) and (min-width: 640px) {
+    .mosaic li:hover, .mosaic li:has(.tile:focus-visible) { z-index: 3; }
+    .mosaic li:hover .flipper, .mosaic li:has(.tile:focus-visible) .flipper {
+      transform: scale(1.12); box-shadow: 0 24px 48px rgba(0, 0, 0, .5);
+    }
+    .mosaic li:hover .zoom, .mosaic li:has(.tile:focus-visible) .zoom { opacity: 1; }
+  }
+
+  /* Celular: carrusel con fotos grandes que se voltean en el lugar. */
+  @media (max-width: 639px) {
+    .lead__d { display: none; }
+    .lead__m { display: inline; }
+    .zoom { display: none; }
+    .mosaic {
+      --card: min(80vw, 340px);
+      position: relative; flex-wrap: nowrap; justify-content: flex-start; gap: 1rem;
+      margin-inline: calc(50% - 50vw);
+      padding: .5rem calc((100vw - var(--card)) / 2) 1rem;
+      overflow-x: auto; overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory; scrollbar-width: none;
+    }
+    .mosaic::-webkit-scrollbar { display: none; }
+    .mosaic li { flex: 0 0 var(--card); scroll-snap-align: center; }
+    .back {
+      position: absolute; inset: 0; display: flex; flex-direction: column; gap: .6rem;
+      padding: 1.1rem 1.1rem .9rem; overflow-y: auto; border-radius: .25rem;
+      background: #10202f; border: 1px solid rgba(255, 255, 255, .12); color: #e9eef3;
+      transform: rotateY(180deg); backface-visibility: hidden; -webkit-backface-visibility: hidden;
+      cursor: pointer;
+    }
+    .b-kicker { margin: 0; font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent, #d9915a); }
+    .b-title { margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.5rem; line-height: 1.1; font-weight: 600; }
+    .b-text { margin: 0; font-size: .88rem; line-height: 1.5; color: #cfd8e0; }
+    .b-fact { margin: auto 0 0; padding-top: .7rem; border-top: 1px solid rgba(255, 255, 255, .14); font-size: .8rem; color: #fff; }
+    .b-tap { margin: 0; font-size: .72rem; color: #8fa1b0; }
+    .mosaic li.is-flipped .flipper { transform: rotateY(180deg); }
+    .dots { display: flex; justify-content: center; gap: .1rem; margin-top: .25rem; }
+    .dots button { position: relative; width: 1.5rem; height: 1.5rem; padding: 0; border: 0; background: none; cursor: pointer; }
+    .dots button::after {
+      content: ''; position: absolute; inset: 0; margin: auto; width: .55rem; height: .55rem;
+      border-radius: 50%; background: rgba(255, 255, 255, .3); transition: transform .2s ease, background .2s ease;
+    }
+    .dots button[aria-current='true']::after { background: var(--accent, #d9915a); transform: scale(1.35); }
+    .dots button:focus-visible { outline: 2px solid var(--accent, #d9915a); border-radius: 50%; }
+  }
+  @media (prefers-reduced-motion: reduce) { .flipper, .zoom { transition: none; } }
 </style>
+
+<!-- Estilos del visor: global porque el visor se crea con JavaScript fuera de este componente. -->
+<style is:global>
+  .pv {
+    position: fixed; inset: 0; z-index: 1000;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
+    padding: 1rem; background: rgba(6, 12, 19, .94);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    opacity: 0; transition: opacity .35s ease;
+  }
+  .pv.on { opacity: 1; }
+  .pv__wrap {
+    width: min(88vw, 440px);
+    width: min(88vw, 440px, calc((100vh - 190px) * .8));
+    width: min(88vw, 440px, calc((100svh - 190px) * .8));
+    aspect-ratio: 4 / 5; perspective: 1400px;
+    touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none;
+  }
+  .pv__card {
+    position: relative; width: 100%; height: 100%;
+    transform-style: preserve-3d; transform: rotateY(var(--ang, 0deg));
+    transition: transform .8s cubic-bezier(.2, .8, .2, 1);
+  }
+  .pv__card.drag { transition: none; cursor: grabbing; }
+  .pv__face {
+    position: absolute; inset: 0; overflow: hidden; border-radius: .25rem;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .5);
+  }
+  .pv__front { background: #10202f; }
+  .pv__front img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+  .pv__cap {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 2.5rem 1rem .9rem;
+    background: linear-gradient(to top, rgba(6, 12, 19, .85), transparent);
+    color: #fff; font-size: .95rem; pointer-events: none;
+  }
+  .pv__back {
+    transform: rotateY(180deg);
+    display: flex; flex-direction: column; gap: .7rem; padding: 1.4rem 1.3rem 1.1rem; overflow-y: auto;
+    background: #10202f; border: 1px solid rgba(255, 255, 255, .12); color: #e9eef3;
+  }
+  .pv__kicker { margin: 0; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent, #d9915a); }
+  .pv__title { margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.7rem; line-height: 1.1; font-weight: 600; }
+  .pv__text { margin: 0; font-size: .95rem; line-height: 1.55; color: #cfd8e0; }
+  .pv__fact { margin: auto 0 0; padding-top: .8rem; border-top: 1px solid rgba(255, 255, 255, .14); font-size: .85rem; color: #fff; }
+  .pv__tap { margin: 0; font-size: .75rem; color: #8fa1b0; }
+  .pv__hint { margin: 0; font-size: .85rem; color: #b8c4cf; text-align: center; }
+  .pv__bar { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .5rem; }
+  .pv__count { min-width: 3.2rem; text-align: center; font-size: .85rem; color: #b8c4cf; }
+  .pv__bar button {
+    padding: .55rem 1rem; border: 1px solid rgba(255, 255, 255, .3); border-radius: 999px;
+    background: transparent; color: #fff; font: inherit; font-size: .9rem; cursor: pointer;
+  }
+  .pv__bar button:hover { background: rgba(255, 255, 255, .1); }
+  .pv__bar button:focus-visible { outline: 2px solid var(--accent, #d9915a); outline-offset: 2px; }
+  .pv__bar .pv__close { background: #fff; color: #0b1622; border-color: #fff; }
+  .pv__bar .pv__close:hover { background: #e4e9ee; }
+  @media (prefers-reduced-motion: reduce) { .pv, .pv__card { transition-duration: 1ms; } }
+</style>
+
+<script>
+  interface Tile { btn: HTMLButtonElement; foto: HTMLElement; li: HTMLElement | null; back: HTMLElement | null; caption: string; title: string; text: string; fact: string; pos: string }
+
+  const EASE = 'cubic-bezier(.2,.8,.2,1)';
+  const reduce = (): boolean => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /** Transformación que coloca un elemento con el tamaño y posición de `from` estando en `to`. */
+  function between(from: DOMRect, to: DOMRect): string {
+    const dx = from.left + from.width / 2 - (to.left + to.width / 2);
+    const dy = from.top + from.height / 2 - (to.top + to.height / 2);
+    return `translate(${dx}px, ${dy}px) scale(${from.width / to.width}, ${from.height / to.height})`;
+  }
+
+  function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = ''): HTMLElementTagNameMap[K] {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    return e;
+  }
+
+  const tiles: Tile[] = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-photo]')).flatMap((btn) => {
+    const foto = btn.querySelector<HTMLElement>('.foto');
+    if (!foto) return [];
+    return [{
+      btn, foto,
+      li: btn.closest<HTMLElement>('li'),
+      back: btn.closest<HTMLElement>('li')?.querySelector<HTMLElement>('.back') ?? null,
+      caption: btn.dataset.caption ?? '',
+      title: btn.dataset.title ?? '',
+      text: btn.dataset.text ?? '',
+      fact: btn.dataset.fact ?? '',
+      pos: btn.dataset.pos ?? 'center',
+    }];
+  });
+
+  let opened = false;
+  const mobile = matchMedia('(max-width: 639px)');
+
+  /** Celular: la foto se voltea en el lugar. */
+  function toggle(i: number): void {
+    const t = tiles[i];
+    if (!t.li) return;
+    const on = t.li.classList.toggle('is-flipped');
+    t.btn.setAttribute('aria-pressed', String(on));
+    t.back?.setAttribute('aria-hidden', String(!on));
+  }
+
+  /** Ajusta el comportamiento según el tamaño de pantalla. */
+  function syncMode(): void {
+    tiles.forEach((t) => {
+      t.li?.classList.remove('is-flipped');
+      t.back?.setAttribute('aria-hidden', 'true');
+      if (mobile.matches) { t.btn.removeAttribute('aria-haspopup'); t.btn.setAttribute('aria-pressed', 'false'); }
+      else { t.btn.setAttribute('aria-haspopup', 'dialog'); t.btn.removeAttribute('aria-pressed'); }
+    });
+  }
+  syncMode();
+  mobile.addEventListener('change', syncMode);
+
+  tiles.forEach((t, i) => {
+    t.btn.addEventListener('click', () => (mobile.matches ? toggle(i) : open(i)));
+    t.back?.addEventListener('click', () => toggle(i));
+  });
+
+  // Puntos del carrusel (celular)
+  const track = document.querySelector<HTMLElement>('[data-track]');
+  const dots = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-dot]'));
+  const slides = track ? Array.from(track.children) as HTMLElement[] : [];
+  const center = (li: HTMLElement): number => li.offsetLeft + li.offsetWidth / 2;
+  function markDot(): void {
+    if (!track || !mobile.matches || !slides.length) return;
+    const mid = track.scrollLeft + track.clientWidth / 2;
+    let best = 0;
+    slides.forEach((li, i) => { if (Math.abs(center(li) - mid) < Math.abs(center(slides[best]) - mid)) best = i; });
+    dots.forEach((d, i) => d.setAttribute('aria-current', String(i === best)));
+  }
+  let ticking = false;
+  track?.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { ticking = false; markDot(); });
+  }, { passive: true });
+  dots.forEach((d, i) => d.addEventListener('click', () => {
+    if (!track || !slides[i]) return;
+    track.scrollTo({ left: center(slides[i]) - track.clientWidth / 2, behavior: reduce() ? 'auto' : 'smooth' });
+  }));
+  mobile.addEventListener('change', markDot);
+  markDot();
+
+  function open(start: number): void {
+    if (opened || !tiles.length) return;
+    opened = true;
+    let index = start;
+
+    const overlay = el('div', 'pv');
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Foto ampliada. Voltéala para leer su historia.');
+
+    const wrap = el('div', 'pv__wrap');
+    const card = el('div', 'pv__card');
+    const front = el('div', 'pv__face pv__front');
+    const back = el('div', 'pv__face pv__back');
+    card.append(front, back);
+    wrap.append(card);
+
+    const hint = el('p', 'pv__hint');
+    hint.textContent = 'Arrastra para girar · toca la foto para voltearla';
+    const bar = el('div', 'pv__bar');
+    const prev = el('button'); prev.type = 'button'; prev.textContent = '‹ Anterior';
+    const count = el('span', 'pv__count');
+    const next = el('button'); next.type = 'button'; next.textContent = 'Siguiente ›';
+    const turn = el('button'); turn.type = 'button'; turn.textContent = 'Voltear';
+    const close = el('button', 'pv__close'); close.type = 'button'; close.textContent = 'Cerrar';
+    if (tiles.length > 1) bar.append(prev, count, next);
+    bar.append(turn, close);
+    overlay.append(wrap, hint, bar);
+
+    // ---------- Contenido de la foto actual ----------
+    function render(i: number): void {
+      const t = tiles[i];
+      front.replaceChildren();
+      const source = t.foto.firstElementChild?.cloneNode(true) as HTMLElement | undefined;
+      if (source) {
+        front.append(source);
+        const img = source instanceof HTMLImageElement ? source : source.querySelector('img');
+        if (img) { img.sizes = '(min-width: 600px) 440px, 88vw'; img.loading = 'eager'; img.style.objectPosition = t.pos; }
+      }
+      const cap = el('span', 'pv__cap'); cap.textContent = t.caption;
+      front.append(cap);
+
+      back.replaceChildren();
+      const kicker = el('p', 'pv__kicker'); kicker.textContent = 'La historia';
+      const h = el('h3', 'pv__title'); h.textContent = t.title;
+      const p = el('p', 'pv__text'); p.textContent = t.text;
+      back.append(kicker, h, p);
+      if (t.fact) { const f = el('p', 'pv__fact'); f.textContent = t.fact; back.append(f); }
+      const tap = el('p', 'pv__tap'); tap.textContent = 'Toca para volver a la foto';
+      back.append(tap);
+      count.textContent = `${i + 1} / ${tiles.length}`;
+    }
+    render(index);
+
+    // ---------- Entrada: la foto vuela desde su lugar hasta el centro ----------
+    const prevOverflow = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
+    const origin = tiles[index].foto.getBoundingClientRect();
+    tiles[index].foto.style.visibility = 'hidden';
+    document.body.append(overlay);
+    const final = wrap.getBoundingClientRect();
+    requestAnimationFrame(() => overlay.classList.add('on'));
+    wrap.animate([{ transform: between(origin, final) }, { transform: 'none' }], { duration: reduce() ? 1 : 650, easing: EASE });
+    turn.focus({ preventScroll: true });
+
+    // ---------- Giro: siempre termina en 0° (foto) o 180° (historia) ----------
+    let angle = 0;
+    const apply = (a: number): void => { card.style.setProperty('--ang', `${a}deg`); };
+    const settle = (a: number): void => { angle = Math.round(a / 180) * 180; apply(angle); };
+    turn.addEventListener('click', () => settle(angle + 180));
+
+    let startX = 0, startAngle = 0, dragging = false, moved = false;
+    wrap.addEventListener('pointerdown', (e) => {
+      dragging = true; moved = false; startX = e.clientX; startAngle = angle;
+      card.classList.add('drag');
+      wrap.setPointerCapture(e.pointerId);
+    });
+    wrap.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 5) moved = true;
+      apply(startAngle + dx * 0.55);
+    });
+    const release = (e: PointerEvent): void => {
+      if (!dragging) return;
+      dragging = false;
+      card.classList.remove('drag');
+      settle(moved ? startAngle + (e.clientX - startX) * 0.55 : startAngle + 180);
+    };
+    wrap.addEventListener('pointerup', release);
+    wrap.addEventListener('pointercancel', release);
+    wrap.addEventListener('dragstart', (e) => e.preventDefault());
+
+    // ---------- Navegar entre fotos ----------
+    function go(step: number): void {
+      tiles[index].foto.style.visibility = '';
+      index = (index + step + tiles.length) % tiles.length;
+      tiles[index].foto.style.visibility = 'hidden';
+      card.classList.add('drag'); angle = 0; apply(0);
+      requestAnimationFrame(() => card.classList.remove('drag'));
+      render(index);
+    }
+    prev.addEventListener('click', () => go(-1));
+    next.addEventListener('click', () => go(1));
+
+    // ---------- Cierre: la foto vuelve a su lugar ----------
+    function dismiss(): void {
+      document.removeEventListener('keydown', onKey);
+      overlay.classList.remove('on');
+      tiles[index].btn.scrollIntoView({ block: 'nearest' });
+      const target = tiles[index].foto.getBoundingClientRect();
+      const flight = wrap.animate(
+        [{ transform: 'none' }, { transform: between(target, wrap.getBoundingClientRect()) }],
+        { duration: reduce() ? 1 : 520, easing: EASE, fill: 'forwards' },
+      );
+      flight.onfinish = () => {
+        tiles[index].foto.style.visibility = '';
+        overlay.remove();
+        document.documentElement.style.overflow = prevOverflow;
+        opened = false;
+        tiles[index].btn.focus({ preventScroll: true });
+      };
+    }
+    function onKey(e: KeyboardEvent): void {
+      if (e.key === 'Escape') dismiss();
+      else if (e.key === 'ArrowLeft' && tiles.length > 1) { e.preventDefault(); go(-1); }
+      else if (e.key === 'ArrowRight' && tiles.length > 1) { e.preventDefault(); go(1); }
+      else if (e.key === 'Tab') {
+        e.preventDefault();
+        const items = Array.from(bar.querySelectorAll('button'));
+        const at = items.indexOf(document.activeElement as HTMLButtonElement);
+        items[(at + (e.shiftKey ? -1 : 1) + items.length) % items.length].focus();
+      }
+    }
+    document.addEventListener('keydown', onKey);
+    close.addEventListener('click', dismiss);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) dismiss(); });
+  }
+</script>
