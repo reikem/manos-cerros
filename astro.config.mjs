@@ -1,14 +1,14 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-// Cambia "site" por tu dominio real: lo usan el canonical, el sitemap y Open Graph.
 export default defineConfig({
-  site: 'https://manosdelcerro.cl',
+  // Si usas GitHub Pages sin un dominio propio configurado aún, lo ideal es:
+  site: 'https://reikem.github.io',
+  base: '/manos-cerros', // ¡Importante para que reconozca la sub-ruta del repositorio!
+  
   integrations: [sitemap()],
   compressHTML: true,
   build: {
-    // CSS y JS siempre como archivos externos con hash: permite una CSP estricta
-    // (sin 'unsafe-inline' en scripts) y caché inmutable en el CDN.
     inlineStylesheets: 'never',
   },
   vite: { build: { assetsInlineLimit: 0 } },
