@@ -2,9 +2,6 @@
 allowBuilds:
   esbuild: true
   sharp: true
-# Compatibilidad con pnpm 10
-onlyBuiltDependencies:
-  - esbuild
-  - sharp
+  workerd: false
 # Solo instala versiones publicadas hace más de 3 días (en minutos).
 minimumReleaseAge: 4320
