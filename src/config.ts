@@ -8,6 +8,6 @@ export const config = {
    * Si el navegador la bloquea por CORS, define PUBLIC_VERIFY_API con la URL de un proxy.
    */
   verifyApi:
-    import.meta.env.PUBLIC_VERIFY_API ||
-    'https://yopagoenvalpo.cl/api/provisorias/provisorias/PorNumeroArriendo',
+  import.meta.env.PUBLIC_VERIFY_API ||
+  'https://verify-manos-cerros.jimmymeneses11.workers.dev',
 } as const;
