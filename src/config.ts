@@ -9,5 +9,5 @@ export const config = {
    */
   verifyApi:
   import.meta.env.PUBLIC_VERIFY_API ||
-  'https://verify-manos-cerros.jimmymeneses11.workers.dev',
+  'https://purple-resonance-08f2.jimmymeneses11.workers.dev/',
 } as const;

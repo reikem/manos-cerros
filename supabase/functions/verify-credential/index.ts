@@ -1,6 +1,6 @@
 // Proxy hacia el sistema municipal: evita CORS, valida el ID y devuelve solo lo necesario.
 // Desplegar con: supabase functions deploy verify --no-verify-jwt
-const API = 'https://goenvalpo.cl/api/provisorias/provisorias/PorNumeroArriendo'; // sin "?" final
+const API = 'https://yopagoenvalpo.cl/api/provisorias/provisorias/PorNumeroArriendo'; // sin "?" final
 const ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ?? '').split(',').map((s) => s.trim()).filter(Boolean);
 const hits = new Map<string, { n: number; t: number }>(); // límite simple por instancia
 const LIMIT = 30; // consultas por minuto por IP
