@@ -1,4 +1,4 @@
-import { extractRentalId, fetchProvisoria, isActive, maskRut, paymentLabel, VerifyError, type Provisoria } from '../lib/credential';
+import { extractRentalId, fetchProvisoria, log, formatCLP, getDireccion, getMetraje, isActive, maskRut, paymentLabel, VerifyError, type Provisoria } from '../lib/credential';
 import { initCredential } from './credential-viewer';
 
 interface QrDetector { detect(src: CanvasImageSource): Promise<{ rawValue: string }[]> }
@@ -46,10 +46,11 @@ export function initVerifier(root: HTMLElement): void {
     const ok = isActive(p);
     set('nombre', p.nombres);
     set('rut', maskRut(p.Rut));
-    set('direccion', p.direccion);
+    set('direccion', getDireccion(p));
     set('giro', p.descripcion);
     set('numero', String(p.NumeroArriendo));
-    set('metraje', p.metraje ?? ''); // <--- CAMBIO AQUÍ (Soluciona el error de TypeScript)
+    set('metraje', getMetraje(p));
+    set('deuda', formatCLP(p.deuda));
     set('estado', `${ok ? '✓ ' : '! '}${p.estado}`);
     set('pagos', paymentLabel(p));
     q('[data-f="estado"]').dataset.tone = ok ? 'ok' : 'warn';
@@ -65,6 +66,7 @@ export function initVerifier(root: HTMLElement): void {
   }
 
   async function verify(raw: string): Promise<void> {
+    log('verify → inicio con:', raw);
     facts.hidden = true;
     result.dataset.state = 'loading';
     msg.textContent = 'Consultando el sistema municipal…';
@@ -72,7 +74,9 @@ export function initVerifier(root: HTMLElement): void {
       const id = extractRentalId(raw);
       if (!id) throw new VerifyError('invalid_qr');
       show(await fetchProvisoria(id));
+      log('verify → resultado mostrado en pantalla');
     } catch (e) {
+      log('verify → falló:', e instanceof VerifyError ? `VerifyError(${e.code})` : e);
       result.dataset.state = 'error';
       msg.textContent = MESSAGES[e instanceof VerifyError ? e.code : 'server'];
     }
@@ -86,7 +90,11 @@ export function initVerifier(root: HTMLElement): void {
 
   async function decode(src: CanvasImageSource, w: number, h: number): Promise<string | null> {
     if (detector) {
-      try { return (await detector.detect(src))[0]?.rawValue ?? null; } catch { /* cae a jsQR */ }
+      try {
+        const v = (await detector.detect(src))[0]?.rawValue ?? null;
+        if (v) log('decode → BarcodeDetector leyó:', v);
+        return v;
+      } catch (err) { log('decode → BarcodeDetector falló, uso jsQR:', err); }
     }
     const { default: jsQR } = await import('jsqr'); // se descarga solo cuando hace falta
     const scale = Math.min(1, 720 / Math.max(w, h));
@@ -94,7 +102,9 @@ export function initVerifier(root: HTMLElement): void {
     canvas.height = Math.round(h * scale);
     ctx.drawImage(src, 0, 0, canvas.width, canvas.height);
     const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    return jsQR(img.data, img.width, img.height, { inversionAttempts: 'attemptBoth' })?.data ?? null;
+    const v = jsQR(img.data, img.width, img.height, { inversionAttempts: 'attemptBoth' })?.data ?? null;
+    if (v) log('decode → jsQR leyó:', v);
+    return v;
   }
 
   // ---------- Cámara ----------
@@ -111,6 +121,7 @@ export function initVerifier(root: HTMLElement): void {
   }
 
   async function openScanner(): Promise<void> {
+    log('cámara → abriendo escáner | BarcodeDetector:', !!detector, '| HTTPS:', window.isSecureContext);
     scanMsg.textContent = 'Solicitando acceso a la cámara…';
     dialog.showModal();
     if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
@@ -123,6 +134,7 @@ export function initVerifier(root: HTMLElement): void {
         audio: false,
       });
     } catch (err) {
+      log('cámara → error:', (err as DOMException)?.name, err);
       scanMsg.textContent = cameraError(err);
       return;
     }
@@ -155,13 +167,14 @@ export function initVerifier(root: HTMLElement): void {
     const file = input.files?.[0];
     input.value = '';
     if (!file) return;
+    log('foto → archivo:', file.name, file.type, `${Math.round(file.size / 1024)} KB`);
     result.dataset.state = 'loading';
     msg.textContent = 'Leyendo el código de la foto…';
     try {
       const bmp = await createImageBitmap(file);
       const text = await decode(bmp, bmp.width, bmp.height);
       bmp.close();
-      if (!text) { result.dataset.state = 'error'; msg.textContent = 'No encontramos un código QR en la foto. Intenta con una imagen más nítida y de cerca.'; return; }
+      if (!text) { log('foto → no se encontró ningún QR'); result.dataset.state = 'error'; msg.textContent = 'No encontramos un código QR en la foto. Intenta con una imagen más nítida y de cerca.'; return; }
       await verify(text);
     } catch {
       result.dataset.state = 'error';
@@ -173,6 +186,7 @@ export function initVerifier(root: HTMLElement): void {
   q<HTMLFormElement>('[data-manual]').addEventListener('submit', (e) => {
     e.preventDefault();
     const value = q<HTMLInputElement>('[data-manual-input]').value;
+    log('manual → número ingresado:', value);
     void verify(value);
   });
 }

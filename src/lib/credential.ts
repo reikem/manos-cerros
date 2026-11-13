@@ -1,5 +1,9 @@
 import { config } from "../config";
 
+/** Logs de depuración: se activan abriendo la página con ?debug=1 (o en desarrollo). */
+const DEBUG = import.meta.env.DEV || (typeof location !== 'undefined' && /[?&]debug(=|&|$)/.test(location.search));
+export const log = (...args: unknown[]): void => { if (DEBUG) console.log('[QR]', ...args); };
+
 /** Respuesta del sistema municipal (campos que usa la credencial). */
 export interface Provisoria {
   NumeroArriendo: number;
@@ -27,14 +31,17 @@ const ID_RE = /^\d{1,10}$/;
  */
 export function extractRentalId(raw: string): string | null {
   const text = raw.trim();
-  if (ID_RE.test(text)) return text;
+  log('extractRentalId → texto recibido:', JSON.stringify(text));
+  if (ID_RE.test(text)) { log('extractRentalId → es un número directo:', text); return text; }
   try {
     const url = new URL(text);
     const host = url.hostname.toLowerCase();
-    if (host !== OFFICIAL_HOST && !host.endsWith(`.${OFFICIAL_HOST}`)) return null;
+    if (host !== OFFICIAL_HOST && !host.endsWith(`.${OFFICIAL_HOST}`)) { log('extractRentalId → host no oficial:', host); return null; }
     const id = url.searchParams.get('id') ?? '';
+    log('extractRentalId → URL oficial, id =', id);
     return ID_RE.test(id) ? id : null;
   } catch {
+    log('extractRentalId → no es número ni URL válida');
     return null;
   }
 }
@@ -47,6 +54,7 @@ function isProvisoria(x: unknown): x is Provisoria {
 export async function fetchProvisoria(id: string): Promise<Provisoria> {
   const url = new URL(config.verifyApi);
   url.searchParams.set('id', id);
+  log('fetchProvisoria → GET', url.toString());
   let res: Response;
   try {
     res = await fetch(url, {
@@ -55,14 +63,18 @@ export async function fetchProvisoria(id: string): Promise<Provisoria> {
       referrerPolicy: 'no-referrer',
       signal: AbortSignal.timeout(10_000),
     });
-  } catch {
+  } catch (err) {
+    log('fetchProvisoria → ERROR de red/CORS/timeout:', err);
     throw new VerifyError('network');
   }
+  log('fetchProvisoria → status', res.status, '| CORS header:', res.headers.get('access-control-allow-origin'));
   if (res.status === 404) throw new VerifyError('not_found');
   if (!res.ok) throw new VerifyError('server');
   const data: unknown = await res.json().catch(() => null);
+  log('fetchProvisoria → respuesta JSON:', data);
   const p = (data as { provisoria?: unknown } | null)?.provisoria ?? data;
-  if (!isProvisoria(p)) throw new VerifyError('not_found');
+  if (!isProvisoria(p)) { log('fetchProvisoria → la respuesta no tiene el formato esperado:', p); throw new VerifyError('not_found'); }
+  log('fetchProvisoria → OK', { id: p.NumeroArriendo, nombre: p.nombres, estado: p.estado, deuda: p.deuda });
   return p;
 }
 
