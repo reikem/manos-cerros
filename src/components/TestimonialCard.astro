@@ -1,0 +1,43 @@
+---
+import type { Testimonial } from '../data/site';
+interface Props { item: Testimonial }
+const { item } = Astro.props;
+---
+<figure class="carta">
+  <div class="carta-in" tabindex="0" role="button" aria-label={`Ver de cerca el testimonio de ${item.name}`}>
+    <span class="sello" aria-hidden="true">{item.name[0]}</span>
+    <blockquote>“{item.quote}”</blockquote>
+    <figcaption><strong>{item.name}</strong>{item.role}</figcaption>
+    <span class="holo" aria-hidden="true"></span><span class="brillo" aria-hidden="true"></span>
+  </div>
+</figure>
+<style is:global>
+  .carta { flex: 0 0 min(78vw, 310px); scroll-snap-align: center; margin: 0; perspective: 900px; touch-action: pan-x pan-y; }
+  .carta-in { --rx: 0deg; --ry: 0deg; --s: 1; --mx: 50%; --my: 50%; --bx: 50%; --by: 50%; --o: 0;
+    position: relative; aspect-ratio: 5 / 7; padding: 1.6rem 1.5rem 1.4rem; border-radius: 16px; color: var(--hueso); cursor: zoom-in;
+    background: linear-gradient(160deg, #16384f, var(--mar) 70%); outline-offset: 6px;
+    display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; transform-style: preserve-3d;
+    transform: rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--s));
+    box-shadow: calc(var(--ry) * -1.2) calc(var(--rx) * 1.2 + 14px) 34px rgba(0,0,0,.35), 0 0 0 1px rgba(233,235,234,.08);
+    transition: transform .6s cubic-bezier(.2,.8,.2,1), box-shadow .6s; }
+  .carta-in.mueve { transition: transform .08s linear, box-shadow .08s linear; }
+  .carta-in::before { content: ""; position: absolute; inset: 8px; border: 1px solid rgba(184,120,62,.7); border-radius: 10px; pointer-events: none; }
+  .sello { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--cobre); font: 500 1.15rem var(--serif); color: var(--cobre); transform: translateZ(30px); }
+  .carta blockquote { margin: 0; font: italic 400 1.22rem / 1.32 var(--serif); transform: translateZ(22px); }
+  .carta figcaption { margin: 0; font-size: .82rem; color: rgba(233,235,234,.72); border-top: 1px solid rgba(233,235,234,.25); padding-top: .8rem; transform: translateZ(14px); }
+  .carta strong { display: block; color: var(--hueso); font-weight: 600; font-size: .95rem; }
+  .holo, .brillo { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: var(--o); transition: opacity .4s; }
+  .holo { background: repeating-linear-gradient(115deg, rgba(184,120,62,.55) 0, rgba(47,127,120,.55) 12%, rgba(233,235,234,.6) 22%, rgba(138,110,190,.45) 32%, rgba(184,120,62,.55) 42%);
+    background-size: 260% 260%; background-position: var(--bx) var(--by); mix-blend-mode: color-dodge; filter: brightness(.9) contrast(1.1); }
+  .brillo { background: radial-gradient(circle at var(--mx) var(--my), rgba(255,255,255,.55), rgba(255,255,255,0) 52%); mix-blend-mode: soft-light; }
+  /* Vista ampliada (la crea scripts/lightbox.ts) */
+  .zoom { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1.5rem; background: rgba(7,21,31,.82); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); opacity: 0; transition: opacity .45s; }
+  .zoom.on { opacity: 1; }
+  .zoom-wrap { perspective: 1100px; width: min(86vw, calc((100svh - 6rem) * 5 / 7), 420px); }
+  .zoom .carta-in { cursor: default; padding: 2rem 1.9rem 1.7rem; border-radius: 20px; }
+  .zoom .sello { width: 56px; height: 56px; font-size: 1.4rem; }
+  .zoom blockquote { font-size: clamp(1.25rem, 4.2vw, 1.7rem); }
+  .zoom figcaption { font-size: .95rem; } .zoom strong { font-size: 1.1rem; }
+  .cierra { position: absolute; top: calc(1rem + env(safe-area-inset-top, 0px)); right: 1.2rem; width: 46px; height: 46px; border-radius: 50%; border: 1px solid rgba(233,235,234,.5); background: transparent; color: var(--hueso); font-size: 1.5rem; line-height: 1; cursor: pointer; }
+  .cierra:hover { background: var(--hueso); color: var(--mar); }
+</style>

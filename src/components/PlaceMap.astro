@@ -1,0 +1,35 @@
+---
+import { places, site } from '../data/site';
+import { osmSearch } from '../utils/commons';
+const { lat, lon, bbox } = site.map;
+const embed = `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${lat}%2C${lon}`;
+const full = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=15/${lat}/${lon}`;
+---
+<section class="section" id="mapa" aria-labelledby="t-mapa">
+  <div class="container grid">
+    <div>
+      <h2 class="h2" id="t-mapa">Dónde nos encuentras</h2>
+      <p class="intro">Trabajamos entre el plan y los cerros de Valparaíso, en las calles y plazas que ya conoces. Toca un lugar para verlo en el mapa.</p>
+      <ul class="puntos">
+        {places.map((p) => <li><a href={osmSearch(p.query)} target="_blank" rel="noopener">{p.name} <small>{p.zone}</small></a></li>)}
+      </ul>
+    </div>
+    <div>
+      <div class="marco anim-clip"><iframe title="Mapa de Valparaíso" src={embed} loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe></div>
+      <a class="enlace" href={full} target="_blank" rel="noopener">Abrir mapa completo</a>
+    </div>
+  </div>
+</section>
+<style>
+  .grid { display: grid; gap: 2.5rem; }
+  @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1.5fr; align-items: start; } }
+  .intro { color: var(--fg-soft); max-width: 30rem; }
+  .puntos { list-style: none; margin: 1.5rem 0 0; padding: 0; }
+  .puntos li { border-top: 1px solid var(--line); } .puntos li:last-child { border-bottom: 1px solid var(--line); }
+  .puntos a { display: flex; justify-content: space-between; gap: 1rem; padding: .95rem 0; text-decoration: none; font-weight: 500; }
+  .puntos a:hover { color: var(--accent-text); } small { font-weight: 300; color: var(--fg-soft); }
+  .marco { position: relative; aspect-ratio: 4 / 3; min-height: 340px; background: var(--mar); }
+  iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; filter: grayscale(.55) contrast(1.05); }
+  @media (prefers-color-scheme: dark) { iframe { filter: invert(.92) hue-rotate(180deg) grayscale(.5) contrast(.9); } }
+  .enlace { display: inline-block; margin-top: .8rem; font-size: .9rem; }
+</style>

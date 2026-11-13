@@ -1,0 +1,12 @@
+@import './progress.css';
+@import './hero.css';
+@import './manifesto.css';
+@import './reveal.css';
+@import './timeline.css';
+@import './cerro.css';
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  .anim-words__text span { color: var(--hueso) !important; }
+  .anim-windows { opacity: 1 !important; }
+}

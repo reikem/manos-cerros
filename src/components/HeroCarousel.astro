@@ -1,0 +1,22 @@
+---
+import ResponsiveImage from './ui/ResponsiveImage.astro';
+import type { Photo } from '../data/site';
+interface Props { slides: Photo[] }
+const { slides } = Astro.props;
+---
+<div class="track anim-zoom">
+  {slides.map((s, i) => (
+    <div class={`slide${i === 0 ? ' is-active' : ''}`} data-slide data-caption={s.caption} role="group"
+      aria-roledescription="diapositiva" aria-label={`${i + 1} de ${slides.length}`} aria-hidden={i === 0 ? 'false' : 'true'}>
+      <ResponsiveImage class="slide__img" file={s.file} alt={s.alt} widths={[900, 1600, 2400]} sizes="100vw" width={1600} height={900} eager={i === 0} />
+    </div>
+  ))}
+</div>
+<style>
+  .track { position: absolute; inset: 0; }
+  .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s ease; }
+  .slide.is-active { opacity: 1; }
+  .track :global(.slide__img) { width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%; transform: scale(1.1); }
+  .slide.is-active :global(.slide__img) { transform: scale(1); transition: transform 9s linear; }
+  @media (prefers-reduced-motion: reduce) { .track :global(.slide__img) { transform: none; transition: none; } }
+</style>

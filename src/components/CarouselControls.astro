@@ -1,0 +1,35 @@
+---
+interface Props { count: number; firstCaption: string }
+const { count, firstCaption } = Astro.props;
+---
+<div class="ui">
+  <p class="ui__info" aria-hidden="true"><span data-counter>01</span> / {String(count).padStart(2, '0')} <span class="ui__cap" data-caption-out>{firstCaption}</span></p>
+  <div class="ui__row">
+    <div class="ui__dots">
+      {Array.from({ length: count }, (_, i) => (
+        <button type="button" data-dot aria-label={`Ir a la imagen ${i + 1}`} aria-current={i === 0 ? 'true' : undefined}></button>
+      ))}
+    </div>
+    <div class="ui__btns">
+      <button type="button" data-prev aria-label="Imagen anterior">←</button>
+      <button type="button" data-toggle aria-label="Pausar rotación" aria-pressed="false">❚❚</button>
+      <button type="button" data-next aria-label="Imagen siguiente">→</button>
+    </div>
+  </div>
+</div>
+<style>
+  .ui { margin-top: 2.4rem; display: grid; gap: .8rem; max-width: 30rem; }
+  .ui__info { margin: 0; font-size: .85rem; letter-spacing: .08em; opacity: .85; }
+  .ui__cap { margin-left: .8rem; font-style: italic; font: italic 400 1.1rem var(--serif); letter-spacing: 0; }
+  .ui__row { display: flex; align-items: center; justify-content: space-between; gap: 1.2rem; }
+  .ui__dots { display: flex; gap: .5rem; }
+  .ui__dots button { position: relative; width: 34px; height: 18px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+  .ui__dots button::before { content: ''; position: absolute; left: 0; right: 0; top: 8px; height: 2px; background: rgba(233, 235, 234, .35); }
+  .ui__dots button::after { content: ''; position: absolute; left: 0; top: 8px; height: 2px; width: 0; background: var(--cobre); }
+  .ui__dots button[aria-current='true']::after { animation: dot-fill var(--interval, 6500ms) linear forwards; }
+  :global(.is-paused) .ui__dots button[aria-current='true']::after { animation-play-state: paused; width: 100%; animation: none; }
+  @keyframes dot-fill { to { width: 100%; } }
+  .ui__btns { display: flex; gap: .5rem; }
+  .ui__btns button { width: 42px; height: 42px; border: 1px solid rgba(233, 235, 234, .55); border-radius: 50%; background: rgba(11, 34, 51, .25); color: var(--hueso); font-size: .9rem; cursor: pointer; transition: background .25s, color .25s; }
+  .ui__btns button:hover { background: var(--hueso); color: var(--mar); }
+</style>

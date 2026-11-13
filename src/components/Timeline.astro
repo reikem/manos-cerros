@@ -1,0 +1,23 @@
+---
+import { timeline } from '../data/site';
+---
+<section class="section section--alt" aria-labelledby="t-dia">
+  <div class="container">
+    <h2 class="h2" id="t-dia">Un día en la calle</h2>
+    <ol class="lista anim-draw">
+      {timeline.map((i) => (
+        <li><span class="hora">{i.time}</span><div><h3>{i.title}</h3><p>{i.text}</p></div></li>
+      ))}
+    </ol>
+  </div>
+</section>
+<style>
+  .lista { list-style: none; margin: 0; padding: 0 0 0 2.4rem; position: relative; }
+  .lista::before { content: ""; position: absolute; left: 0; top: 1.2rem; bottom: 1.2rem; width: 1px; background: var(--cobre); }
+  li { position: relative; display: grid; grid-template-columns: minmax(6rem, 10rem) 1fr; gap: 1.5rem; align-items: baseline; padding: 1.5rem 0; }
+  li::before { content: ""; position: absolute; left: -2.4rem; top: 2.4rem; width: 9px; height: 9px; margin-left: -4px; border-radius: 50%; background: var(--cobre); }
+  .hora { font: 300 clamp(2.6rem, 6vw, 4.4rem) / 1 var(--serif); color: var(--accent-text); }
+  h3 { margin: 0; font: 500 1.6rem var(--serif); }
+  p { margin: .2rem 0 0; max-width: 34rem; color: var(--fg-soft); }
+  @media (max-width: 560px) { li { grid-template-columns: 1fr; gap: .2rem; } }
+</style>

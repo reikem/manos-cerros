@@ -1,0 +1,9 @@
+project_id = "manos-del-cerro"
+
+# Las dos funciones son públicas (las llama el navegador) y se protegen solas:
+# validación estricta, límite por IP y CORS restringido a tus dominios.
+[functions.post-comment]
+verify_jwt = false
+
+[functions.verify-credential]
+verify_jwt = false

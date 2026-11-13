@@ -1,0 +1,77 @@
+---
+---
+<section class="section section--alt ops" id="opiniones" aria-labelledby="t-op" data-comments>
+  <div class="container">
+    <h2 class="h2" id="t-op">Lo que dice la comunidad</h2>
+    <div class="ops__grid">
+      <div>
+        <div class="sum" data-summary aria-live="polite"></div>
+        <form class="opform" data-form novalidate>
+          <h3>Cuéntanos tu experiencia</h3>
+          <label for="au">Tu nombre (opcional)</label>
+          <input id="au" name="author" maxlength="40" autocomplete="nickname" placeholder="Vecino/a" />
+          <fieldset class="rate"><legend>Tu valoración</legend>
+            <div class="rate__stars">
+              {[5, 4, 3, 2, 1].map((n) => (<><input type="radio" name="rating" id={`rt${n}`} value={n} /><label for={`rt${n}`}>★<span class="visually-hidden">{n} {n === 1 ? 'estrella' : 'estrellas'}</span></label></>))}
+            </div>
+          </fieldset>
+          <label for="bd">Tu opinión</label>
+          <textarea id="bd" name="body" rows="4" minlength="10" maxlength="600" required placeholder="¿Cómo ha sido tu experiencia con los comerciantes de tu barrio?"></textarea>
+          <p class="opform__count" data-count>0/600</p>
+          <div class="hp" aria-hidden="true"><label>No llenar<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+          <button class="opbtn" type="submit">Publicar opinión</button>
+          <p class="opform__status" data-status role="status"></p>
+          <p class="opform__note">Máximo 3 opiniones por hora desde tu conexión. No publiques datos personales ni enlaces. Se publican sin moderación previa y se ocultan si son ofensivas.</p>
+        </form>
+      </div>
+      <div>
+        <div class="oplist" data-list aria-live="polite"><p class="empty">Cargando opiniones…</p></div>
+        <button class="opbtn opbtn--ghost" type="button" data-more hidden>Ver todas las opiniones</button>
+      </div>
+    </div>
+  </div>
+  <dialog class="opdlg" data-all aria-label="Todas las opiniones">
+    <div class="opdlg__head"><h3>Todas las opiniones</h3><button type="button" class="opbtn opbtn--ghost" data-all-close>Cerrar</button></div>
+    <div class="sum" data-summary-all></div>
+    <div class="opdlg__scroll">
+      <table class="optable"><thead><tr><th>Fecha</th><th>Nombre</th><th>Valoración</th><th>Opinión</th></tr></thead><tbody data-rows></tbody></table>
+    </div>
+    <div class="pager" data-pager></div>
+  </dialog>
+</section>
+<style is:global>
+  .ops__grid { display: grid; gap: 3rem; align-items: start; } @media (min-width: 900px) { .ops__grid { grid-template-columns: 1fr 1.2fr; } }
+  .stars { display: inline-block; font-size: 1.15rem; letter-spacing: .08em; line-height: 1; background: linear-gradient(90deg, var(--cobre) calc(var(--r, 0) / 5 * 100%), var(--line) 0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sum__top { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; } .sum__avg { font: 300 4.4rem / 1 var(--serif); } .sum .stars { font-size: 1.6rem; } .sum__n { color: var(--fg-soft); }
+  .sum__bars { display: grid; gap: .4rem; margin: 1rem 0 2rem; max-width: 26rem; }
+  .bar { display: grid; grid-template-columns: 2.2rem 1fr 2rem; gap: .6rem; align-items: center; font-size: .85rem; } .bar__track { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+  .bar__fill { display: block; height: 100%; width: var(--w); background: var(--cobre); transform-origin: left; animation: bar-grow 1s cubic-bezier(.2, .8, .2, 1) both; } @keyframes bar-grow { from { transform: scaleX(0); } }
+  .bar__count { text-align: right; color: var(--fg-soft); }
+  .opform { display: grid; gap: .5rem; padding: 1.6rem; background: var(--bg); border: 1px solid var(--line); border-radius: 2px; }
+  .opform h3 { margin: 0 0 .5rem; font: 500 1.6rem var(--serif); } .opform label, .rate legend { font-size: .9rem; margin-top: .4rem; }
+  .opform input:not([type='radio']), .opform textarea { width: 100%; padding: .75rem .9rem; border: 1px solid var(--line); border-radius: 2px; background: transparent; color: inherit; font: inherit; resize: vertical; }
+  .rate { border: 0; margin: 0; padding: 0; } .rate legend { padding: 0; }
+  .rate__stars { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: .1rem; }
+  .rate__stars input { position: absolute; opacity: 0; pointer-events: none; }
+  .rate__stars label { margin: 0; font-size: 2rem; line-height: 1; cursor: pointer; color: var(--line); transition: color .15s, transform .15s; }
+  .rate__stars label:hover, .rate__stars label:hover ~ label, .rate__stars input:checked ~ label { color: var(--cobre); } .rate__stars label:hover { transform: scale(1.15); }
+  .rate__stars input:focus-visible + label { outline: 2px solid var(--cobre); outline-offset: 2px; }
+  .opform__count { margin: 0; text-align: right; font-size: .8rem; color: var(--fg-soft); } .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .opbtn { padding: .85rem 1.6rem; border: 1px solid var(--fg); border-radius: 2px; background: var(--fg); color: var(--bg); font: 500 .95rem var(--sans); cursor: pointer; transition: background .25s, color .25s; }
+  .opbtn:hover:not(:disabled) { background: transparent; color: var(--fg); } .opbtn:disabled { opacity: .5; cursor: wait; } .opbtn--ghost { background: transparent; color: var(--fg); margin-top: 1.2rem; } .opbtn--ghost:hover:not(:disabled) { background: var(--fg); color: var(--bg); }
+  .opform__status { margin: 0; min-height: 1.4em; font-weight: 500; } .opform__note { margin: 0; font-size: .8rem; color: var(--fg-soft); }
+  .oplist { display: grid; gap: 1rem; } .op { padding: 1.2rem 1.4rem; background: var(--bg); border-left: 3px solid var(--cobre); animation: op-in .6s both; }
+  @keyframes op-in { from { opacity: 0; transform: translateY(12px); } }
+  .op__head { display: flex; justify-content: space-between; align-items: center; } .op__date { font-size: .8rem; color: var(--fg-soft); }
+  .op__body { margin: .5rem 0 .4rem; font: italic 400 1.25rem / 1.35 var(--serif); overflow-wrap: anywhere; } .op__by { margin: 0; font-size: .85rem; color: var(--fg-soft); } .empty { color: var(--fg-soft); }
+  .opdlg { width: min(96vw, 980px); max-height: 92svh; padding: 1.6rem; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--fg); }
+  .opdlg::backdrop { background: rgba(7, 21, 31, .75); backdrop-filter: blur(4px); } .opdlg__head { display: flex; justify-content: space-between; align-items: center; } .opdlg__head h3 { margin: 0; font: 300 2.2rem var(--serif); } .opdlg__head .opbtn { margin: 0; }
+  .opdlg__scroll { overflow-x: auto; margin-top: 1rem; } .optable { width: 100%; border-collapse: collapse; font-size: .92rem; min-width: 560px; }
+  .optable th { text-align: left; font-weight: 600; padding: .6rem .8rem; border-bottom: 2px solid var(--fg); } .optable td { padding: .7rem .8rem; border-bottom: 1px solid var(--line); vertical-align: top; overflow-wrap: anywhere; } .optable td:nth-child(1) { white-space: nowrap; }
+  .pager { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1rem; font-size: .9rem; } .pager button { padding: .5rem 1rem; border: 1px solid var(--line); background: transparent; color: inherit; border-radius: 2px; cursor: pointer; } .pager button:disabled { opacity: .4; cursor: default; }
+</style>
+<script>
+  import { initComments } from '../scripts/comments';
+  const root = document.querySelector<HTMLElement>('[data-comments]');
+  if (root) initComments(root);
+</script>

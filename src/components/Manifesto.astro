@@ -1,0 +1,25 @@
+---
+import { manifesto } from '../data/site';
+const words = manifesto.split(/\s+/);
+---
+<section class="manifesto anim-words" id="manifiesto" aria-label="Quiénes somos">
+  <div class="pin"><div class="container">
+    <p class="anim-words__text" aria-label={manifesto}>
+      {words.map((w, i) => <><span aria-hidden="true" style={`--p:${(i / words.length).toFixed(3)}`}>{w}</span>{' '}</>)}
+    </p>
+    <p class="firma">Agrupación Manos del Cerro</p>
+  </div></div>
+</section>
+<style>
+  .manifesto { height: 260vh; background: var(--mar); color: var(--hueso); }
+  .pin { position: sticky; top: 0; height: 100svh; display: flex; align-items: center; }
+  .anim-words__text { margin: 0; font: 300 clamp(2rem, 4.8vw, 4rem) / 1.18 var(--serif); max-width: 24em; }
+  .anim-words__text span { color: rgba(233,235,234,.2); }
+  .firma { margin-top: 2.2rem; font-size: .95rem; color: var(--cobre); letter-spacing: .04em; }
+  /* Sin scroll-driven animations: texto completo y sección normal */
+  @supports not (animation-timeline: scroll()) {
+    .manifesto { height: auto; padding: 6rem 0; } .pin { position: static; height: auto; }
+    .anim-words__text span { color: var(--hueso); }
+  }
+  @media (prefers-reduced-motion: reduce) { .manifesto { height: auto; padding: 6rem 0; } .pin { position: static; height: auto; } }
+</style>

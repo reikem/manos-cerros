@@ -1,0 +1,35 @@
+---
+import HeroCarousel from './HeroCarousel.astro';
+import CarouselControls from './CarouselControls.astro';
+import Button from './ui/Button.astro';
+import { heroSlides } from '../data/site';
+---
+<header class="hero" data-carousel role="region" aria-roledescription="carrusel" aria-label="Galería de Valparaíso">
+  <HeroCarousel slides={heroSlides} />
+  <div class="container hero__in anim-exit">
+    <h1>
+      <span class="anim-rise" style="--d:0">La calle es</span>
+      <span class="anim-rise" style="--d:1"><em>nuestro taller.</em></span>
+    </h1>
+    <p class="anim-rise" style="--d:3">Somos una agrupación de comerciantes ambulantes de Valparaíso. Trabajamos, cuidamos y defendemos las calles del puerto donde nacieron nuestras familias.</p>
+    <div class="hero__btns anim-rise" style="--d:4">
+      <Button href="#manifiesto" variant="fill">Conoce nuestra historia</Button>
+      <Button href="#sumate">Súmate</Button>
+    </div>
+    <div class="anim-rise" style="--d:5"><CarouselControls count={heroSlides.length} firstCaption={heroSlides[0].caption} /></div>
+  </div>
+</header>
+<style>
+  .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end; color: var(--hueso); overflow: hidden; background: var(--mar); touch-action: pan-y; }
+  .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11, 34, 51, .6), rgba(11, 34, 51, .12) 36%, rgba(11, 34, 51, .92)); pointer-events: none; }
+  .hero__in { position: relative; z-index: 2; padding-bottom: clamp(2rem, 6vh, 4rem); padding-top: 7rem; }
+  h1 { margin: 0; font: 300 clamp(3.4rem, 10.5vw, 8.6rem) / .95 var(--serif); letter-spacing: -.015em; max-width: 9em; }
+  h1 span { display: block; }
+  p { max-width: 32rem; margin: 1.6rem 0 2rem; font-size: 1.1rem; }
+  .hero__btns { display: flex; flex-wrap: wrap; gap: 1rem; }
+</style>
+<script>
+  import { initCarousel } from '../scripts/carousel';
+  const root = document.querySelector<HTMLElement>('[data-carousel]');
+  if (root) initCarousel(root);
+</script>

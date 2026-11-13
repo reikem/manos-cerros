@@ -1,0 +1,21 @@
+---
+import TestimonialCard from './TestimonialCard.astro';
+import { testimonials } from '../data/site';
+---
+<section class="section" id="voces" aria-labelledby="t-voz">
+  <div class="container">
+    <h2 class="h2" id="t-voz">Voces del cerro</h2>
+    <p class="pista">Mueve el cursor sobre cada carta y haz clic para verla de cerca.</p>
+  </div>
+  <div class="voces" aria-label="Testimonios, desliza para ver más">
+    {testimonials.map((t) => <TestimonialCard item={t} />)}
+  </div>
+</section>
+<style>
+  .pista { margin: -1.8rem 0 0; color: var(--fg-soft); font-size: .95rem; }
+  .voces { display: flex; gap: 2rem; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2.5rem max(1.5rem, calc((100vw - 1120px) / 2)) 3rem; scrollbar-width: thin; }
+</style>
+<script>
+  import { initCardLightbox } from '../scripts/lightbox';
+  initCardLightbox('.carta-in');
+</script>

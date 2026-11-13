@@ -1,0 +1,10 @@
+/* .anim-words: las palabras (span con --p de 0 a 1) se encienden al avanzar el scroll.
+   Sin soporte, el texto queda visible por completo (ver Manifesto.astro). */
+@supports (animation-timeline: scroll()) {
+  .anim-words { view-timeline: --words block; }
+  .anim-words__text span {
+    animation: word-on linear both; animation-timeline: --words;
+    animation-range: contain calc(var(--p) * 62%) contain calc(var(--p) * 62% + 14%);
+  }
+  @keyframes word-on { to { color: var(--hueso); } }
+}

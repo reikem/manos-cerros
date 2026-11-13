@@ -1,0 +1,13 @@
+/* .anim-fog: niebla que deriva (camanchaca). Las demás se ligan al scroll de la sección .anim-cerro */
+.anim-fog { animation: fog-drift 40s ease-in-out infinite alternate; }
+@keyframes fog-drift { from { transform: translateX(-6%); } to { transform: translateX(14%); } }
+@supports (animation-timeline: scroll()) {
+  .anim-cerro { view-timeline: --cerro block; }
+  /* Ventanas que se encienden al caer la tarde, una tras otra */
+  .anim-windows { opacity: .1; animation: window-on linear both; animation-timeline: --cerro;
+    animation-range: cover calc(var(--p) * 40%) cover calc(var(--p) * 40% + 22%); }
+  @keyframes window-on { to { opacity: 1; } }
+  /* Ascensor que sube el cerro: ajusta el desplazamiento si cambias A y B en CerroDivider.astro */
+  .anim-funicular { animation: lift linear both; animation-timeline: --cerro; animation-range: cover 5% cover 70%; }
+  @keyframes lift { to { transform: translate(204px, -170px); } }
+}

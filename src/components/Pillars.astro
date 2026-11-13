@@ -1,0 +1,18 @@
+---
+import { pillars } from '../data/site';
+---
+<section class="section section--deep" aria-labelledby="t-def">
+  <div class="container">
+    <h2 class="h2" id="t-def">Lo que defendemos</h2>
+    {pillars.map((p) => (
+      <div class="fila anim-rule"><b class="anim-slide">{p.title}</b><p>{p.text}</p></div>
+    ))}
+  </div>
+</section>
+<style>
+  .fila { position: relative; display: grid; gap: .6rem 3rem; padding: 2.4rem 0; }
+  .fila::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; background: rgba(233,235,234,.35); transform-origin: left; }
+  b { font: 300 clamp(3rem, 10vw, 7rem) / .95 var(--serif); }
+  p { margin: 0; max-width: 30rem; color: rgba(233,235,234,.82); align-self: end; }
+  @media (min-width: 800px) { .fila { grid-template-columns: 1.2fr 1fr; } }
+</style>

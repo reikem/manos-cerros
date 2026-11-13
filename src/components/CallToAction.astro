@@ -1,0 +1,20 @@
+---
+import Button from './ui/Button.astro';
+import ResponsiveImage from './ui/ResponsiveImage.astro';
+import { images, site } from '../data/site';
+---
+<section class="cta section" id="sumate" aria-labelledby="t-sum">
+  <ResponsiveImage class="cta__img" file={images.cta.file} alt="" widths={[800, 1400, 2000]} width={1600} height={600} />
+  <div class="container cta__in">
+    <h2 class="h2" id="t-sum">Esta calle también es tuya.</h2>
+    <p>Compra en nuestros puestos, comparte nuestra historia o escríbenos para apoyar a la agrupación. Cada gesto ayuda a mantener vivas las calles del puerto.</p>
+    <div class="btns"><Button href={site.whatsapp} variant="fill" external>Escríbenos por WhatsApp</Button><Button href={`mailto:${site.email}`}>Enviar un correo</Button></div>
+  </div>
+</section>
+<style>
+  .cta { position: relative; overflow: hidden; background: var(--mar); color: var(--hueso); padding-block: clamp(5rem, 12vw, 10rem); }
+  .cta :global(.cta__img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .35; }
+  .cta__in { position: relative; } .h2 { max-width: 10em; }
+  p { max-width: 34rem; font-size: 1.15rem; margin: 0 0 2.2rem; }
+  .btns { display: flex; flex-wrap: wrap; gap: 1rem; }
+</style>

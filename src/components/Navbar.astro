@@ -1,0 +1,39 @@
+---
+import { site, nav } from '../data/site';
+---
+<div class="nav-sentinel" data-nav-sentinel aria-hidden="true"></div>
+<nav class="nav" data-nav aria-label="Principal">
+  <div class="container nav__in">
+    <a class="nav__brand" href="#">{site.name}</a>
+    <ul class="nav__list">
+      {nav.map((i) => <li><a href={i.href}>{i.label}</a></li>)}
+    </ul>
+    <details class="nav__menu">
+      <summary>Menú</summary>
+      <ul>{nav.map((i) => <li><a href={i.href}>{i.label}</a></li>)}</ul>
+    </details>
+  </div>
+</nav>
+<style>
+  .nav-sentinel { position: absolute; top: 0; left: 0; width: 1px; height: 90px; pointer-events: none; }
+  .nav { position: fixed; z-index: 60; inset: 0 0 auto 0; padding-block: calc(1.2rem + env(safe-area-inset-top, 0px)) 1.2rem; color: var(--hueso);
+    transition: background-color .35s, padding .35s, box-shadow .35s; }
+  .nav.is-solid { padding-block: calc(.7rem + env(safe-area-inset-top, 0px)) .7rem; background: rgba(11, 34, 51, .9); box-shadow: 0 1px 0 rgba(233, 235, 234, .12); }
+  @supports (backdrop-filter: blur(1px)) { .nav.is-solid { background: rgba(11, 34, 51, .72); backdrop-filter: blur(12px) saturate(1.4); -webkit-backdrop-filter: blur(12px) saturate(1.4); } }
+  .nav__in { display: flex; justify-content: space-between; align-items: center; position: relative; }
+  .nav__brand { font: 500 1.5rem var(--serif); letter-spacing: .02em; text-decoration: none; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  .nav__list { display: flex; gap: 1.5rem; font-size: .88rem; }
+  .nav a { text-decoration: none; opacity: .8; }
+  .nav a:hover, .nav a[aria-current='true'] { opacity: 1; text-decoration: underline; text-decoration-color: var(--cobre); text-underline-offset: 8px; text-decoration-thickness: 2px; }
+  .nav__menu { display: none; }
+  summary { cursor: pointer; list-style: none; padding: .4rem .9rem; border: 1px solid rgba(233, 235, 234, .6); border-radius: 2px; font-size: .9rem; }
+  summary::-webkit-details-marker { display: none; }
+  .nav__menu ul { position: absolute; right: 0; top: 3rem; min-width: 12rem; padding: .6rem 1rem; background: var(--mar); border: 1px solid rgba(233, 235, 234, .2); }
+  .nav__menu li a { display: block; padding: .6rem 0; }
+  @media (max-width: 900px) { .nav__list { display: none; } .nav__menu { display: block; } }
+</style>
+<script>
+  import { initStickyNav } from '../scripts/nav';
+  initStickyNav();
+</script>

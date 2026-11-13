@@ -1,0 +1,115 @@
+---
+import { groups, hotspots, reglamentoStatus, sources } from '../data/reglamento';
+const people = [
+  { t: 'Madres y padres de familia', d: 'Salimos cada mañana para poner el plato en la mesa de nuestros hijos.', icon: 'M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm9 1a2.4 2.4 0 1 0 0-4.8A2.4 2.4 0 0 0 17 9zM2 21v-4a6 6 0 0 1 12 0v4zm13 0v-3a5 5 0 0 1 7 0v3z' },
+  { t: 'Personas con discapacidad', d: 'Trabajamos con dignidad, porque la pensión no alcanza y queremos valernos por nosotros mismos.', icon: 'M12 5.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM10 8h3v5h4l2 6M9.5 11.5A5 5 0 1 0 15 18.5' },
+  { t: 'Personas con pensiones que no alcanzan', d: 'Un puesto honrado es nuestra manera de llegar a fin de mes sin pedir nada a nadie.', icon: 'M3 12h18a9 9 0 0 1-18 0zM8 3c-1 1.5 1 2.500 0 4M12 3c-1 1.500 1 2.500 0 4M16 3c-1 1.500 1 2.500 0 4' },
+];
+---
+<section class="section section--alt reg" id="reglamento" aria-labelledby="t-reg">
+  <div class="container">
+    <h2 class="h2" id="t-reg">Trabajo honrado, reglas claras</h2>
+    <p class="reg__lead">No somos un foco de maldad ni delincuentes: somos vecinas y vecinos de Valparaíso que sostienen a sus familias con su trabajo, pagan su permiso y <strong>siguen las reglas</strong>.</p>
+
+    <div class="people">
+      {people.map((p) => (
+        <article class="person">
+          <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={p.icon} /></svg>
+          <h3>{p.t}</h3><p>{p.d}</p>
+        </article>
+      ))}
+    </div>
+
+    <aside class="status" role="note">
+      <h3>{reglamentoStatus.title}</h3>
+      <p>{reglamentoStatus.text}</p>
+    </aside>
+
+    <h3 class="sub">Un puesto que cumple, paso a paso</h3>
+    <div class="stall" data-stall>
+      <figure class="stall__fig">
+        <svg viewBox="0 0 600 360" role="img" aria-label="Dibujo de un puesto de comercio con sus medidas y reglas">
+          <rect class="s-wall" x="0" y="0" width="22" height="300" />
+          <rect class="s-ground" x="0" y="300" width="600" height="60" />
+          <rect class="s-curb" x="0" y="300" width="600" height="6" />
+          <g class="s-pole"><line x1="150" y1="92" x2="150" y2="300" /><line x1="450" y1="92" x2="450" y2="300" /></g>
+          <path d="M120 92h360l24 46H96z" class="s-awn" />
+          {[0, 1, 2, 3, 4, 5].map((i) => <path d={`M${120 + i * 60} 92h60l${4 - i * 1.6} 46h-${60 - 0}z`} class={i % 2 ? 's-str1' : 's-str2'} opacity=".85" />)}
+          <rect class="s-top" x="140" y="210" width="320" height="12" rx="2" />
+          <rect class="s-cloth" x="146" y="222" width="308" height="62" />
+          <g class="s-goods"><rect x="170" y="180" width="46" height="30" /><rect x="224" y="190" width="40" height="20" /><circle cx="300" cy="200" r="10" /><circle cx="322" cy="203" r="8" /><rect x="350" y="176" width="52" height="34" /><rect x="410" y="192" width="30" height="18" /></g>
+          <rect class="s-card" x="288" y="236" width="26" height="38" rx="3" />
+          <rect class="s-doc" x="418" y="240" width="22" height="28" rx="2" />
+          <g class="s-dim"><line x1="146" y1="160" x2="454" y2="160" /><line x1="146" y1="154" x2="146" y2="166" /><line x1="454" y1="154" x2="454" y2="166" /><text x="300" y="152">1,5 m</text>
+            <line x1="476" y1="210" x2="476" y2="284" /><line x1="470" y1="210" x2="482" y2="210" /><line x1="470" y1="284" x2="482" y2="284" /><text x="498" y="252">0,8 m</text></g>
+          <rect class="s-crate" x="40" y="262" width="52" height="36" /><path class="s-x" d="M48 270l36 20M84 270l-36 20" />
+          <circle class="s-clock" cx="535" cy="62" r="24" /><path class="s-hand" d="M535 48v14l10 6" /><text class="s-ct" x="535" y="104">08:00–18:30</text>
+          <g class="s-dim"><line x1="24" y1="338" x2="576" y2="338" /><line x1="24" y1="332" x2="24" y2="344" /><line x1="576" y1="332" x2="576" y2="344" /><text x="300" y="330">Acera de al menos 2 m</text></g>
+        </svg>
+        {hotspots.map((h) => (
+          <button type="button" class="spot" data-spot={h.n} style={`left:${h.x}%;top:${h.y}%`} aria-hidden="true" tabindex="-1">{h.n}</button>
+        ))}
+      </figure>
+      <ol class="rules">
+        {hotspots.map((h) => (
+          <li><button type="button" data-rule={h.n} aria-pressed="false"><b>{h.n}</b><span><strong>{h.title}</strong><small>{h.text}</small></span></button></li>
+        ))}
+      </ol>
+    </div>
+
+    <h3 class="sub">El reglamento en detalle</h3>
+    <div class="acc">
+      {groups.map((g, i) => (
+        <details name="reglas" open={i === 0}>
+          <summary>{g.title}</summary>
+          {g.note && <p class="acc__note">{g.note}</p>}
+          <ul>{g.rules.map((r) => <li><strong>{r.title}.</strong> {r.text}</li>)}</ul>
+        </details>
+      ))}
+    </div>
+
+    <p class="warn">Información de referencia, no es asesoría legal. Para trámites, consulta al Departamento de Desarrollo Económico Local del municipio.</p>
+    <details class="src"><summary>Fuentes consultadas</summary><ul>{sources.map((s) => <li><a href={s.href} target="_blank" rel="noopener noreferrer">{s.label}</a></li>)}</ul></details>
+  </div>
+</section>
+<style is:global>
+  .reg__lead { max-width: 40rem; margin: -1.5rem 0 2.5rem; font-size: 1.2rem; }
+  .people { display: grid; gap: 1.2rem; margin-bottom: 2.5rem; }
+  @media (min-width: 800px) { .people { grid-template-columns: repeat(3, 1fr); } }
+  .person { padding: 1.6rem; border: 1px solid var(--line); border-radius: 2px; color: var(--accent-text); transition: transform .4s, border-color .4s; }
+  .person:hover { transform: translateY(-4px); border-color: var(--cobre); }
+  .person h3 { margin: .8rem 0 .3rem; font: 500 1.5rem var(--serif); color: var(--fg); } .person p { margin: 0; color: var(--fg-soft); }
+  .status { margin-bottom: 3rem; padding: 1.4rem 1.6rem; border-left: 4px solid var(--cobre); background: var(--bg); }
+  .status h3 { margin: 0 0 .4rem; font: 500 1.4rem var(--serif); } .status p { margin: 0; max-width: 46rem; }
+  .reg .sub { margin: 3rem 0 1.4rem; font: 300 clamp(1.8rem, 4vw, 2.6rem) / 1.1 var(--serif); }
+  .stall { display: grid; gap: 1.5rem; align-items: start; }
+  @media (min-width: 900px) { .stall { grid-template-columns: 1.4fr 1fr; } }
+  .stall__fig { position: relative; margin: 0; background: var(--bg); border: 1px solid var(--line); }
+  .stall__fig svg { display: block; width: 100%; height: auto; }
+  .s-wall { fill: var(--line); } .s-ground { fill: var(--bg-alt); } .s-curb { fill: var(--fg-soft); }
+  .s-pole line { stroke: var(--fg-soft); stroke-width: 4; } .s-awn { fill: #b8783e; } .s-str1 { fill: #e9ebea; } .s-str2 { fill: #2f7f78; }
+  .s-top { fill: #8a5a2e; } .s-cloth { fill: #2f7f78; } .s-goods rect, .s-goods circle { fill: #c9a24a; stroke: #8a5a2e; stroke-width: 2; }
+  .s-card { fill: #f4efe2; stroke: #243a8f; stroke-width: 2; } .s-doc { fill: #fff; stroke: #8a5a2e; stroke-width: 2; }
+  .s-dim line { stroke: var(--fg); stroke-width: 1.6; } .s-dim text, .s-ct { fill: var(--fg); font: 600 14px var(--sans); text-anchor: middle; }
+  .s-crate { fill: #b9a27a; stroke: #6b5a3a; stroke-width: 2; } .s-x { stroke: #c0392b; stroke-width: 5; stroke-linecap: round; fill: none; }
+  .s-clock { fill: var(--bg); stroke: var(--fg); stroke-width: 3; } .s-hand { stroke: var(--fg); stroke-width: 3; fill: none; stroke-linecap: round; }
+  .spot { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; border: 2px solid var(--bg); background: var(--cobre); color: #fff; font: 700 .85rem var(--sans); cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, .35); transition: transform .3s; animation: spot-pulse 2.4s infinite; }
+  .spot.is-on { transform: scale(1.3); background: var(--accent-text); animation: none; }
+  @keyframes spot-pulse { 0% { box-shadow: 0 0 0 0 rgba(184, 120, 62, .6); } 70%, 100% { box-shadow: 0 0 0 14px rgba(184, 120, 62, 0); } }
+  .rules { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+  .rules button { display: flex; gap: .9rem; width: 100%; padding: .8rem 1rem; text-align: left; border: 1px solid var(--line); border-radius: 2px; background: transparent; color: inherit; font: inherit; cursor: pointer; transition: background .25s, border-color .25s; }
+  .rules button b { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--line); font-size: .85rem; }
+  .rules button strong { display: block; font-weight: 600; } .rules small { display: block; color: var(--fg-soft); font-size: .85rem; line-height: 1.45; max-height: 0; overflow: hidden; opacity: 0; transition: max-height .4s, opacity .4s; }
+  .rules button.is-on { border-color: var(--cobre); background: var(--bg); } .rules button.is-on b { background: var(--cobre); color: #fff; } .rules button.is-on small { max-height: 6em; opacity: 1; margin-top: .2rem; }
+  .acc details { border-top: 1px solid var(--line); } .acc details:last-child { border-bottom: 1px solid var(--line); }
+  .acc summary { cursor: pointer; padding: 1.1rem 0; font: 500 1.5rem var(--serif); list-style: none; display: flex; justify-content: space-between; }
+  .acc summary::after { content: '+'; transition: transform .3s; } .acc details[open] summary::after { transform: rotate(45deg); }
+  .acc summary::-webkit-details-marker { display: none; } .acc ul { margin: 0 0 1.2rem; padding-left: 1.2rem; max-width: 46rem; } .acc li { margin: .5rem 0; }
+  .acc__note { margin: -.4rem 0 .8rem; color: var(--fg-soft); font-size: .95rem; }
+  .warn { margin: 2rem 0 .6rem; font-size: .9rem; color: var(--fg-soft); } .src { font-size: .9rem; } .src summary { cursor: pointer; } .src ul { padding-left: 1.2rem; }
+</style>
+<script>
+  import { initStall } from '../scripts/stall';
+  const root = document.querySelector<HTMLElement>('[data-stall]');
+  if (root) initStall(root);
+</script>

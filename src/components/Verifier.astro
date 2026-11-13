@@ -1,0 +1,91 @@
+---
+import CredentialCard from './CredentialCard.astro';
+const checks = [
+  'Lleva la credencial a la vista, con su foto y el código QR.',
+  'El nombre y la foto coinciden con la persona que atiende.',
+  'Al escanear el QR, el sistema municipal muestra el permiso «VIGENTE».',
+  'El puesto está en la dirección autorizada que aparece en la credencial.',
+];
+---
+<section class="section ver" id="verificar" aria-labelledby="t-ver" data-verifier>
+  <div class="container grid">
+    <div>
+      <h2 class="h2" id="t-ver">Verifica que sea un comerciante legal</h2>
+      <p class="lead">Cada comerciante autorizado tiene una credencial municipal con un código QR. Escanéalo para comprobar, en el sistema municipal, que su permiso está vigente y al día.</p>
+
+      <div class="actions">
+        <button type="button" class="vbtn vbtn--fill" data-scan-open>Escanear con la cámara</button>
+        <label class="vbtn">Subir foto del QR<input type="file" accept="image/*" data-file hidden /></label>
+      </div>
+      <form class="manual" data-manual>
+        <label for="num">¿Prefieres escribir el N.º de arriendo?</label>
+        <div><input id="num" data-manual-input inputmode="numeric" pattern="[0-9]{1,10}" maxlength="10" placeholder="Ej.: 70509" required /><button type="submit" class="vbtn">Verificar</button></div>
+      </form>
+      <p class="privacy">Tu cámara solo se usa para leer el código: el video no se guarda ni se envía a ningún servidor, y no registramos las consultas. El navegador te pedirá permiso para usarla.</p>
+
+      <div class="result" data-result data-state="idle" aria-live="polite">
+        <p class="msg" data-msg>Escanea el QR de la credencial o escribe el número para ver el estado del permiso.</p>
+        <dl class="facts" data-facts hidden>
+          <div><dt>Estado</dt><dd><span class="badge" data-f="estado"></span></dd></div>
+          <div><dt>Pagos</dt><dd><span class="badge" data-f="pagos"></span></dd></div>
+          <div><dt>N.º de arriendo</dt><dd data-f="numero"></dd></div>
+          <div><dt>Metraje autorizado</dt><dd data-f="metraje"></dd></div>
+        </dl>
+      </div>
+
+      <h3 class="chk-t">Cómo reconocer una credencial legal</h3>
+      <ol class="chk">{checks.map((c) => <li>{c}</li>)}</ol>
+    </div>
+
+    <div class="card-col">
+      <CredentialCard />
+      <p class="cap">Toca la credencial para acercarla y girarla: atrás verás el QR y la leyenda de la ordenanza.</p>
+      <p class="cap cap--small">Ilustración de referencia: la credencial real incluye la fotografía de la persona. Este sitio no es oficial; los datos se consultan en el sistema municipal «Yo pago en Valpo».</p>
+    </div>
+  </div>
+
+  <dialog class="scan" data-scan-dialog aria-label="Escáner de código QR">
+    <div class="scan__view"><video data-video playsinline muted></video><span class="scan__frame" aria-hidden="true"></span></div>
+    <p class="scan__msg" data-scan-msg role="status"></p>
+    <button type="button" class="vbtn" data-scan-close>Cerrar</button>
+  </dialog>
+</section>
+<style is:global>
+  .ver .grid { display: grid; gap: 3rem; align-items: start; }
+  @media (min-width: 900px) { .ver .grid { grid-template-columns: 1.15fr 1fr; } .card-col { position: sticky; top: 6rem; } }
+  .ver .lead { max-width: 36rem; font-size: 1.15rem; margin: 0 0 1.8rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: .8rem; }
+  .vbtn { display: inline-block; padding: .85rem 1.6rem; border: 1px solid currentColor; border-radius: 2px; background: transparent; color: inherit; font: 500 .95rem var(--sans); letter-spacing: .02em; cursor: pointer; transition: background .25s, color .25s; }
+  .vbtn:hover { background: var(--fg); color: var(--bg); }
+  .vbtn--fill { background: var(--fg); color: var(--bg); } .vbtn--fill:hover { background: transparent; color: var(--fg); }
+  .manual { margin-top: 1.6rem; max-width: 26rem; font-size: .95rem; } .manual div { display: flex; gap: .6rem; margin-top: .4rem; }
+  .manual input { flex: 1; min-width: 0; padding: .8rem 1rem; border: 1px solid var(--line); border-radius: 2px; background: transparent; color: inherit; font: inherit; }
+  .privacy { max-width: 36rem; font-size: .85rem; color: var(--fg-soft); }
+  .result { margin-top: 1.6rem; padding: 1.4rem 1.5rem; border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 2px; transition: border-color .4s; }
+  .result[data-state='ok'] { border-left-color: var(--accent-text); } .result[data-state='error'] { border-left-color: #c75a3a; }
+  .result[data-state='loading'] .msg::after { content: ''; display: inline-block; width: .9em; height: .9em; margin-left: .6em; border: 2px solid var(--line); border-top-color: var(--cobre); border-radius: 50%; animation: ver-spin .8s linear infinite; vertical-align: -.1em; }
+  @keyframes ver-spin { to { transform: rotate(360deg); } }
+  .result .msg { margin: 0; }
+  .facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 1.5rem; margin: 1.2rem 0 0; }
+  .facts[hidden] { display: none; } .facts dt { font-size: .8rem; color: var(--fg-soft); } .facts dd { margin: .1rem 0 0; font-weight: 500; }
+  .badge { display: inline-block; padding: .15rem .7rem; border-radius: 99px; font-weight: 600; font-size: .9rem; border: 1px solid currentColor; }
+  .badge[data-tone='ok'] { color: var(--accent-text); } .badge[data-tone='warn'] { color: #c9822f; }
+  .chk-t { margin: 2.4rem 0 .6rem; font: 500 1.6rem var(--serif); }
+  .chk { margin: 0; padding-left: 1.3rem; color: var(--fg-soft); max-width: 36rem; } .chk li { margin: .3rem 0; }
+  .cap { margin: 1.4rem auto 0; max-width: 22rem; text-align: center; font-size: .95rem; } .cap--small { font-size: .8rem; color: var(--fg-soft); margin-top: .6rem; }
+  .scan { width: min(94vw, 520px); padding: 1rem; border: 1px solid rgba(233, 235, 234, .25); border-radius: 4px; background: var(--mar); color: var(--hueso); }
+  .scan::backdrop { background: rgba(7, 21, 31, .85); backdrop-filter: blur(4px); }
+  .scan__view { position: relative; aspect-ratio: 1; background: #000; overflow: hidden; border-radius: 2px; }
+  .scan__view video { width: 100%; height: 100%; object-fit: cover; }
+  .scan__frame { position: absolute; inset: 14%; border: 2px solid var(--cobre); border-radius: 12px; box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .35); }
+  .scan__frame::after { content: ''; position: absolute; left: 4%; right: 4%; height: 2px; background: var(--cobre); animation: scan-line 2.2s ease-in-out infinite alternate; }
+  @keyframes scan-line { from { top: 6%; } to { top: 94%; } }
+  .scan__msg { min-height: 3.2em; margin: .9rem 0; font-size: .95rem; }
+  .scan .vbtn:hover { background: var(--hueso); color: var(--mar); }
+  @media (prefers-reduced-motion: reduce) { .scan__frame::after { animation: none; top: 50%; } }
+</style>
+<script>
+  import { initVerifier } from '../scripts/verifier';
+  const root = document.querySelector<HTMLElement>('[data-verifier]');
+  if (root) initVerifier(root);
+</script>

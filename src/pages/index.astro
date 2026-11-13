@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import CerroDivider from '../components/CerroDivider.astro';
+import Hero from '../components/Hero.astro';
+import Manifesto from '../components/Manifesto.astro';
+import PhotoMosaic from '../components/PhotoMosaic.astro';
+import Timeline from '../components/Timeline.astro';
+import Pillars from '../components/Pillars.astro';
+import Testimonials from '../components/Testimonials.astro';
+import PlaceMap from '../components/PlaceMap.astro';
+import CallToAction from '../components/CallToAction.astro';
+import Verifier from '../components/Verifier.astro';
+import Reglamento from '../components/Reglamento.astro';
+import Comments from '../components/Comments.astro';
+import Footer from '../components/Footer.astro';
+---
+<BaseLayout>
+  <div class="anim-progress" aria-hidden="true"></div>
+  <Navbar />
+  <Hero />
+  <main id="contenido">
+    <Manifesto />
+    <PhotoMosaic />
+    <Timeline />
+    <CerroDivider />
+    <Pillars />
+    <Verifier />
+    <Reglamento />
+    <Testimonials />
+    <Comments />
+    <PlaceMap />
+    <CallToAction />
+  </main>
+  <Footer />
+</BaseLayout>

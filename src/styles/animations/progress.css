@@ -1,0 +1,6 @@
+/* .anim-progress: barra que se llena con el scroll de la página */
+.anim-progress { position: fixed; inset: 0 0 auto 0; height: 3px; background: var(--cobre); transform-origin: left; transform: scaleX(0); z-index: 70; }
+@supports (animation-timeline: scroll()) {
+  .anim-progress { animation: progress-fill linear both; animation-timeline: scroll(root); }
+  @keyframes progress-fill { to { transform: scaleX(1); } }
+}

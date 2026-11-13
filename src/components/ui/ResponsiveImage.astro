@@ -1,0 +1,7 @@
+---
+import { commonsSrc, commonsSrcset } from '../../utils/commons';
+interface Props { file: string; alt: string; widths?: number[]; sizes?: string; eager?: boolean; width: number; height: number; class?: string }
+const { file, alt, widths = [600, 900, 1400], sizes = '100vw', eager = false, width, height, class: cls } = Astro.props;
+---
+<img class={cls} src={commonsSrc(file, widths[Math.floor(widths.length / 2)])} srcset={commonsSrcset(file, widths)} sizes={sizes}
+  alt={alt} width={width} height={height} loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} decoding="async" referrerpolicy="no-referrer" />

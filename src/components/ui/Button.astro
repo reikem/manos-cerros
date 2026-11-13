@@ -1,0 +1,11 @@
+---
+interface Props { href: string; variant?: 'fill' | 'outline'; external?: boolean }
+const { href, variant = 'outline', external = false } = Astro.props;
+---
+<a class={`btn btn--${variant}`} href={href} {...(external ? { target: '_blank', rel: 'noopener' } : {})}><slot /></a>
+<style>
+  .btn { display: inline-block; padding: .9rem 1.8rem; border: 1px solid currentColor; border-radius: 2px; font-weight: 500; font-size: .95rem; letter-spacing: .03em; text-decoration: none; transition: background .3s, color .3s; }
+  .btn--fill { background: var(--hueso); color: var(--mar); border-color: var(--hueso); }
+  .btn--fill:hover { background: transparent; color: var(--hueso); }
+  .btn--outline:hover { background: var(--hueso); color: var(--mar); }
+</style>
