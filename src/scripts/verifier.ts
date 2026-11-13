@@ -49,7 +49,7 @@ export function initVerifier(root: HTMLElement): void {
     set('direccion', p.direccion);
     set('giro', p.descripcion);
     set('numero', String(p.NumeroArriendo));
-    set('metraje', p.metraje);
+    set('metraje', p.metraje ?? ''); // <--- CAMBIO AQUÍ (Soluciona el error de TypeScript)
     set('estado', `${ok ? '✓ ' : '! '}${p.estado}`);
     set('pagos', paymentLabel(p));
     q('[data-f="estado"]').dataset.tone = ok ? 'ok' : 'warn';
@@ -118,7 +118,6 @@ export function initVerifier(root: HTMLElement): void {
       return;
     }
     try {
-      // Aquí el navegador (PC, Android o iOS) pide el permiso de cámara al usuario.
       stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false,
